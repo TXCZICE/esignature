@@ -28,5 +28,5 @@ RUN mkdir -p downloads
 # Expose port 5000
 EXPOSE 5000
 
-# Run the application with Gunicorn
-CMD ["gunicorn", "-c", "gunicorn_config.py", "app:app"]
+# Run the application with Flask (for Render compatibility)
+CMD ["python", "app.py"]

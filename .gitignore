@@ -46,3 +46,4 @@ Thumbs.db
 
 # Docker
 .dockerignore
+gunicorn_config.py
