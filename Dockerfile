@@ -28,5 +28,5 @@ RUN mkdir -p downloads
 # Expose port 5000
 EXPOSE 5000
 
-# Run the application
-CMD ["python", "app.py"]
+# Run the application with Gunicorn
+CMD ["gunicorn", "-c", "gunicorn_config.py", "app:app"]

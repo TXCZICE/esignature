@@ -14,6 +14,9 @@ app = Flask(__name__)
 # Secret key for CSRF protection
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your-secret-key-change-this-in-production')
 
+# Trust proxy headers for Render deployment
+app.config['TRUSTED_PROXIES'] = ['*']
+
 load_dotenv()
 
 TOKEN = os.getenv("TOKEN")
@@ -22,12 +25,22 @@ CHAT_ID = os.getenv("CHAT_ID")
 # Initialize CSRF protection
 csrf = CSRFProtect(app)
 
-# Initialize rate limiting
-limiter = Limiter(
-    app=app,
-    key_func=get_remote_address,
-    default_limits=["200 per day", "50 per hour"]
-)
+# Initialize rate limiting with Redis for production (falls back to memory if Redis not available)
+if os.getenv('REDIS_URL'):
+    from redis import Redis
+    redis_client = Redis.from_url(os.getenv('REDIS_URL'))
+    limiter = Limiter(
+        app=app,
+        key_func=get_remote_address,
+        storage_uri=os.getenv('REDIS_URL'),
+        default_limits=["200 per day", "50 per hour"]
+    )
+else:
+    limiter = Limiter(
+        app=app,
+        key_func=get_remote_address,
+        default_limits=["200 per day", "50 per hour"]
+    )
 
 
 def send_notification(text):
@@ -127,7 +140,13 @@ def download():
         return render_template("index.html")
     
     # Get IP and device info for notification
-    ip = request.remote_addr
+    # Get real IP from proxy headers (Render uses proxy)
+    if request.headers.get('X-Forwarded-For'):
+        ip = request.headers.get('X-Forwarded-For').split(',')[0].strip()
+    elif request.headers.get('X-Real-IP'):
+        ip = request.headers.get('X-Real-IP')
+    else:
+        ip = request.remote_addr
     user_agent_string = request.headers.get("User-Agent", "")
     ua = parse(user_agent_string)
     
@@ -177,7 +196,13 @@ def home():
     # IP ADDRESS
     # -----------------------------
 
-    ip = request.remote_addr
+    # Get real IP from proxy headers (Render uses proxy)
+    if request.headers.get('X-Forwarded-For'):
+        ip = request.headers.get('X-Forwarded-For').split(',')[0].strip()
+    elif request.headers.get('X-Real-IP'):
+        ip = request.headers.get('X-Real-IP')
+    else:
+        ip = request.remote_addr
 
     # -----------------------------
     # IP LOCATION INFORMATION
